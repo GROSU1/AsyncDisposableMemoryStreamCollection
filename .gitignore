@@ -1,0 +1,7 @@
+bin/
+obj/
+.vs/
+[Pp]ack/
+[Pp]ublish/
+[Pp]acked/
+[Pp]ublishsed/
