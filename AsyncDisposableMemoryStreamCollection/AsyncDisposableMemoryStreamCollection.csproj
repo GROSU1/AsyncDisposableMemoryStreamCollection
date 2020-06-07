@@ -11,6 +11,9 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Version>1.0</Version>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/GROSU1/AsyncDisposableMemoryStreamCollection.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/GROSU1/AsyncDisposableMemoryStreamCollection</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
