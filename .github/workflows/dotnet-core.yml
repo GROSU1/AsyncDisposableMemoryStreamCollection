@@ -24,3 +24,7 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
     - name: Pack
       run: dotnet pack --output pack --no-build --no-restore /p:Version=1.0.${GITHUB_RUN_NUMBER}
+    - name: Publish NuGet Package
+      run: dotnet nuget push ${GITHUB_WORKSPACE}/pack/*.nupkg -k ${{secrets.NUGET_TOKEN}} -s https://api.nuget.org/v3/index.json
+    - name: Publish NuGet Symbol Package
+      run: dotnet nuget push ${GITHUB_WORKSPACE}/pack/*.snupkg -k ${{secrets.NUGET_TOKEN}} -s https://api.nuget.org/v3/index.json
