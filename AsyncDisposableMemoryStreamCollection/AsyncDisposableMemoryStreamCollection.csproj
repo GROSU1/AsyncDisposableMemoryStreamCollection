@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>AsyncDisposableMemoryStreamCollection</RootNamespace>
@@ -15,20 +14,18 @@
     <RepositoryUrl>https://github.com/GROSU1/AsyncDisposableMemoryStreamCollection.git</RepositoryUrl>
     <PackageProjectUrl>https://github.com/GROSU1/AsyncDisposableMemoryStreamCollection</PackageProjectUrl>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.4" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.5"/>
+    <PackageReference Include="System.Memory" Version="4.5.4"/>
   </ItemGroup>
-
   <ItemGroup>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath/>
     </None>
   </ItemGroup>
-
 </Project>
