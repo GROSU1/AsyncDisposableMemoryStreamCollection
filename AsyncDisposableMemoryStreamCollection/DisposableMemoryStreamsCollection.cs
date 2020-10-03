@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace AsyncDisposableMemoryStreamCollection
@@ -7,7 +8,7 @@ namespace AsyncDisposableMemoryStreamCollection
     {
         private readonly Microsoft.IO.RecyclableMemoryStreamManager _streamManager;
         private readonly System.Collections.Concurrent.ConcurrentDictionary<System.Guid, MemoryStream> _streams;
-        private bool _disposed = false;
+        private bool _disposed;
 
         /// <summary>
         /// Creates new instance of Disposable Streams Collection
@@ -79,7 +80,7 @@ namespace AsyncDisposableMemoryStreamCollection
             if (found)
             {
                 buffer = new byte[stream.Length];
-                await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
+                await stream.ReadAsync(buffer.AsMemory(0, buffer.Length)).ConfigureAwait(false);
                 stream.Position = 0;
             }
 
