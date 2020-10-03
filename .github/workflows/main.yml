@@ -23,15 +23,15 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore /p:Version=1.0.${GITHUB_RUN_NUMBER}
+        run: dotnet build --configuration Release --no-restore /p:Version=1.1.${GITHUB_RUN_NUMBER}
 
       - name: Test
         run: dotnet test --no-restore --verbosity normal
 
       - name: Pack
         if: github.ref == 'refs/heads/master'
-        run: dotnet pack --no-restore --no-build --output pack /p:Version=1.0.${GITHUB_RUN_NUMBER}
+        run: dotnet pack --no-restore --no-build --output pack /p:Version=1.1.${GITHUB_RUN_NUMBER}
 
       - name: Publish NuGet Package
         if: github.ref == 'refs/heads/master'
-        run: dotnet nuget push ${GITHUB_WORKSPACE}/*.nupkg -k ${{secrets.NUGET_TOKEN}} -s https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ${GITHUB_WORKSPACE}/pack/*.nupkg -k ${{secrets.NUGET_TOKEN}} -s https://api.nuget.org/v3/index.json
