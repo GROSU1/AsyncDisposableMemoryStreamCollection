@@ -1,0 +1,41 @@
+name: .NET Core
+
+on:
+  push:
+    branches: 
+      - master
+      - task/*
+      - feature/*
+  pull_request:
+    branches: 
+      - master
+      - task/*
+      - feature/*
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.402
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore /p:Version=1.0.${GITHUB_RUN_NUMBER}
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Pack
+        run: dotnet pack --output pack /p:Version=1.0.${GITHUB_RUN_NUMBER}
+      - name: Publish NuGet Package
+        run: dotnet nuget push ${GITHUB_WORKSPACE}/pack/*.nupkg -k ${{secrets.NUGET_TOKEN}} -s https://api.nuget.org/v3/index.json
