@@ -9,7 +9,11 @@ on:
 
 jobs:
   default:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    env:
+      configuration: Release
+      test_verbosity: normal
+      version: 1.2
 
     steps:
       - uses: actions/checkout@main
@@ -17,20 +21,20 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@main
         with:
-          dotnet-version: 3.1.x
+          dotnet-version: 5.0.x
 
       - name: Install dependencies
-        run: dotnet restore
+        run: dotnet restore --locked-mode
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore /p:Version=1.1.${GITHUB_RUN_NUMBER}
+        run: dotnet build --configuration ${configuration} --no-restore /p:Version=${version}.${GITHUB_RUN_NUMBER}
 
       - name: Test
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet test --no-restore --verbosity ${test_verbosity}
 
       - name: Pack
         if: github.ref == 'refs/heads/master'
-        run: dotnet pack --no-restore --no-build --output pack /p:Version=1.1.${GITHUB_RUN_NUMBER}
+        run: dotnet pack --configuration ${configuration} --no-restore --no-build --output pack /p:Version=${version}.${GITHUB_RUN_NUMBER}
 
       - name: Publish NuGet Package
         if: github.ref == 'refs/heads/master'
