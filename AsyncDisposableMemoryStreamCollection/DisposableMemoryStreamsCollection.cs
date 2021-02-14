@@ -1,13 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace AsyncDisposableMemoryStreamCollection
 {
-    public sealed class DisposableMemoryStreamsCollection : System.IAsyncDisposable
+    public sealed class DisposableMemoryStreamsCollection : IAsyncDisposable
     {
         private readonly Microsoft.IO.RecyclableMemoryStreamManager _streamManager;
-        private readonly System.Collections.Concurrent.ConcurrentDictionary<System.Guid, MemoryStream> _streams;
+        private readonly ConcurrentDictionary<Guid, MemoryStream> _streams;
         private bool _disposed;
 
         /// <summary>
@@ -16,7 +17,7 @@ namespace AsyncDisposableMemoryStreamCollection
         public DisposableMemoryStreamsCollection()
         {
             _streamManager = new Microsoft.IO.RecyclableMemoryStreamManager();
-            _streams = new System.Collections.Concurrent.ConcurrentDictionary<System.Guid, MemoryStream>();
+            _streams = new ConcurrentDictionary<Guid, MemoryStream>();
         }
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace AsyncDisposableMemoryStreamCollection
         public DisposableMemoryStreamsCollection(int blockSize, int largeBlockSizeMultiple, int maximumBufferSize, bool useExponentialLargeBuffer)
         {
             _streamManager = new Microsoft.IO.RecyclableMemoryStreamManager(blockSize, largeBlockSizeMultiple, maximumBufferSize, useExponentialLargeBuffer);
-            _streams = new System.Collections.Concurrent.ConcurrentDictionary<System.Guid, MemoryStream>();
+            _streams = new ConcurrentDictionary<Guid, MemoryStream>();
         }
 
         /// <summary>
@@ -46,10 +47,10 @@ namespace AsyncDisposableMemoryStreamCollection
         /// <returns>Provided Guid that references the data entered or Empty Guid if data already exists in collection</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="System.OverflowException"></exception>
-        public System.Guid TryAddData(System.Guid identifier, byte[] data)
+        public Guid TryAddData(Guid identifier, byte[] data)
         {
             var hasBeenAdded = _streams.TryAdd(identifier, _streamManager.GetStream(identifier, null, data));
-            return hasBeenAdded ? identifier : System.Guid.Empty;
+            return hasBeenAdded ? identifier : Guid.Empty;
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace AsyncDisposableMemoryStreamCollection
         /// <returns>Unique Guid that references the data entered or Empty Guid if data already exists in collection</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="System.OverflowException"></exception>
-        public System.Guid TryAddData(byte[] data) => TryAddData(System.Guid.NewGuid(), data);
+        public Guid TryAddData(byte[] data) => TryAddData(Guid.NewGuid(), data);
 
         /// <summary>
         /// Attempts to retrieves the stream data from the collection
@@ -72,7 +73,7 @@ namespace AsyncDisposableMemoryStreamCollection
         /// <exception cref="System.NotSupportedException"/>
         /// <exception cref="System.ObjectDisposedException"/>
         /// <exception cref="System.InvalidOperationException"/>
-        public async Task<byte[]> TryGetDataAsync(System.Guid identifier)
+        public async Task<byte[]> TryGetDataAsync(Guid identifier)
         {
             var found = _streams.TryGetValue(identifier, out var stream);
             byte[] buffer = null;
@@ -92,9 +93,9 @@ namespace AsyncDisposableMemoryStreamCollection
         /// </summary>
         /// <param name="identifier">Unique Guid used for identifying the data</param>
         /// <returns>True if stream has been removed, otherwise False</returns>
-        /// <exception cref="System.ArgumentNullException"></exception>
-        /// <exception cref="System.ObjectDisposedException"/>
-        public async Task<bool> TryRemoveDataAsync(System.Guid identifier)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ObjectDisposedException"/>
+        public async Task<bool> TryRemoveDataAsync(Guid identifier)
         {
             MemoryStream stream = null;
             bool hasBeenRemoved = false;
@@ -117,9 +118,9 @@ namespace AsyncDisposableMemoryStreamCollection
         /// <param name="identifier">Unique Guid used for identifying the data</param>
         /// <param name="data">The data to be updated in the collection</param>
         /// <returns>True if data update was successful, otherwise False</returns>
-        /// <exception cref="System.ArgumentNullException"></exception>
-        /// <exception cref="System.ObjectDisposedException"/>
-        public async Task<bool> TryUpdateDataAsync(System.Guid identifier, byte[] data)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ObjectDisposedException"/>
+        public async Task<bool> TryUpdateDataAsync(Guid identifier, byte[] data)
         {
             MemoryStream oldStream = null;
             bool hasBeenUpdate = false;
